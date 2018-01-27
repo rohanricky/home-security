@@ -1,4 +1,4 @@
-
+import face_recognition
 import argparse
 import datetime
 import imutils
@@ -9,6 +9,7 @@ from send_email import email
 from face import face
 from process import process
 import pyautogui
+from PIL import Image, ImageDraw
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
@@ -18,7 +19,6 @@ args = vars(ap.parse_args())
 
 # Webcam
 cam = cv2.VideoCapture(0)
-
 # initialize the first frame in the video stream
 firstFrame = None
 count=0
@@ -56,24 +56,24 @@ while True:
 
 		text = "Occupied"
 	if text=="Occupied":
-		p=Process(target=process,args=(frame,))
-		p.start()
-		p.join()
+		if face(frame) is 1:
+			print("good")
+		else:
+			print('bad')
+			cv2.imwrite('donga.jpg',frame)
+			Process(target=email,args=('donga.jpg',)).start()
 #	process(text,frame)
 
-	cv2.putText(frame, "Room Status: {}".format(text), (10, 20),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-	cv2.putText(frame, datetime.datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),(10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
+#	cv2.putText(frame, "Room Status: {}".format(text), (10, 20),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+#	cv2.putText(frame, datetime.datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),(10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
 
 	# For testing purposes show these videos
-	Process(cv2.imshow("Security Feed", frame)).start()
+#	Process(cv2.imshow("Security Feed", frame)).start()
 #	cv2.imshow("Thresh", thresh)
 #	cv2.imshow("Frame Delta", frameDelta)
 
-	key = cv2.waitKey(1) & 0xFF
-
-	if key == ord("q"):
-		break
 
 # cleanup the cam and close any open windows
+cv2.waitKey(0)
 cam.release()
 cv2.destroyAllWindows()

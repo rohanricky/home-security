@@ -60,13 +60,14 @@ while True:
 	if text=="Occupied":
 		if face(frame) is 1:
 			print("good")
+			count=0
 		else:
 			count+=1
 			print('bad')
 #			cv2.imwrite('donga.jpg',frame)
 			video.write(frame)
-			if count  >= 100:
-				email('video.avi')
+			if count  >= 50:
+				Process(target=email,args=('video.avi',)).start()
 				count=0
 
 

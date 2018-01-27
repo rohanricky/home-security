@@ -4,7 +4,7 @@ import datetime
 import imutils
 import time
 import cv2
-from multiprocessing import Process,Queue
+from multiprocessing import Process
 from send_email import email
 from face import face
 from process import process
@@ -17,14 +17,17 @@ ap.add_argument("-v", "--video", help="path to the video file")
 ap.add_argument("-a", "--min-area", type=int, default=500, help="minimum area size")
 args = vars(ap.parse_args())
 
+#Video of thief
+fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+(h, w) = face_recognition.load_image_file('donga.jpg').shape[:2]
+video=cv2.VideoWriter('video.avi',fourcc,15.0,(w,h),True)
 # Webcam
 cam = cv2.VideoCapture(0)
 # initialize the first frame in the video stream
 firstFrame = None
 count=0
 while True:
-	# grab the current frame and initialize the occupied/unoccupied
-	# text
+	# grab the current frame and initialize the occupied/unoccupied text
 	(grabbed, frame) = cam.read()
 	text = "Unoccupied"
 
@@ -34,7 +37,6 @@ while True:
 	frame = imutils.resize(frame, width=500)
 	gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 	gray = cv2.GaussianBlur(gray, (21, 21), 0)
-
 	# if the first frame is None, initialize it
 	if firstFrame is None:
 		firstFrame = gray
@@ -59,21 +61,32 @@ while True:
 		if face(frame) is 1:
 			print("good")
 		else:
+			count+=1
 			print('bad')
-			cv2.imwrite('donga.jpg',frame)
-			Process(target=email,args=('donga.jpg',)).start()
+#			cv2.imwrite('donga.jpg',frame)
+			video.write(frame)
+			if count  >= 100:
+				email('video.avi')
+				count=0
+
+
+	cv2.imshow("Security Feed", frame)
+	key = cv2.waitKey(1) & 0xFF
+	if key == ord("q"):
+		break
 #	process(text,frame)
 
 #	cv2.putText(frame, "Room Status: {}".format(text), (10, 20),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 #	cv2.putText(frame, datetime.datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),(10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
 
 	# For testing purposes show these videos
-#	Process(cv2.imshow("Security Feed", frame)).start()
+#
 #	cv2.imshow("Thresh", thresh)
 #	cv2.imshow("Frame Delta", frameDelta)
 
 
 # cleanup the cam and close any open windows
+video.release()
 cv2.waitKey(0)
 cam.release()
 cv2.destroyAllWindows()

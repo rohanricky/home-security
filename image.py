@@ -1,50 +1,15 @@
-from multiprocessing import Process, Queue
-from PIL import Image
 import cv2
-import numpy as np
 
-def image_display(taskqueue):
-#   cv2.namedWindow ('image_display', cv2.CV_WINDOW_AUTOSIZE)
-   while True:
+img1 = cv2.imread('donga.jpg')
+img2 = cv2.imread('donga1.jpg')
+print(img1.shape)
+print(img2.shape)
+height , width , layers =  img1.shape
+fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+video = cv2.VideoWriter('video.avi',fourcc,20.0,(height*2,width*2),True)
 
-      image = taskqueue.get()              # Added
-      if image is None:  break             # Added
-      cv2.imshow ('image_display', image)  # Added
-      cv2.waitKey(10)                      # Added
-      continue                             # Added
+video.write(img1)
+video.write(img2)
 
-      if taskqueue.get()==None:
-         continue
-      else:
-         image = taskqueue.get()
-         im = Image.fromstring(image['mode'], image['size'], image['pixels'])
-         num_im = np.asarray(im)
-         cv2.imshow ('image_display', num_im)
-
-
-if __name__ == '__main__':
-   taskqueue = Queue()
-   vidFile = cv2.VideoCapture(0)
-   p = Process(target=image_display, args=(taskqueue,))
-   p.start()
-   while True:
-      flag, image=vidFile.read()
-
-      taskqueue.put(image)  # Added
-      import time           # Added
-      time.sleep(0.010)     # Added
-      continue              # Added
-
-      if flag == 0:
-         break
-      im = Image.fromarray(image)
-      im_dict = {
-      'pixels': im.tostring(),
-      'size': im.size,
-      'mode': im.mode,
-      }
-      taskqueue.put(im_dict)
-
-taskqueue.put(None)
-p.join()
-cv.DestroyAllWindows()
+cv2.destroyAllWindows()
+video.release()

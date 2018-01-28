@@ -7,9 +7,7 @@ import cv2
 from multiprocessing import Process
 from send_email import email
 from face import face
-from process import process
-import pyautogui
-from PIL import Image, ImageDraw
+import os
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
@@ -20,19 +18,17 @@ args = vars(ap.parse_args())
 #Video of thief
 fourcc = cv2.VideoWriter_fourcc(*'MJPG')
 (h, w) = face_recognition.load_image_file('donga.jpg').shape[:2]
-video=cv2.VideoWriter('video.avi',fourcc,15.0,(w,h),True)
 # Webcam
 cam = cv2.VideoCapture(0)
 # initialize the first frame in the video stream
 firstFrame = None
-count=0
+count,vid_no=0,0
 while True:
+	if not os.path.exists(str(vid_no)+'.avi'):
+		video=cv2.VideoWriter(str(vid_no)+'.avi',fourcc,15.0,(w,h),True)
 	# grab the current frame and initialize the occupied/unoccupied text
 	(grabbed, frame) = cam.read()
 	text = "Unoccupied"
-
-	# if the frame could not be grabbed, then we have reached the end
-	# of the video
 	# resize the frame, convert it to grayscale, and blur it
 	frame = imutils.resize(frame, width=500)
 	gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -64,20 +60,18 @@ while True:
 		else:
 			count+=1
 			print('bad')
-#			cv2.imwrite('donga.jpg',frame)
 			video.write(frame)
 			if count  >= 50:
-				Process(target=email,args=('video.avi',)).start()
+				Process(target=email,args=(str(vid_no)+'.avi',)).start()
+				vid_no+=1
 				count=0
 
-
+	cv2.putText(frame, "Room Status: {}".format(text), (10, 20),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 	cv2.imshow("Security Feed", frame)
 	key = cv2.waitKey(1) & 0xFF
 	if key == ord("q"):
 		break
 #	process(text,frame)
-
-#	cv2.putText(frame, "Room Status: {}".format(text), (10, 20),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 #	cv2.putText(frame, datetime.datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),(10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
 
 	# For testing purposes show these videos

@@ -24,9 +24,10 @@ cam = cv2.VideoCapture(0)
 # initialize the first frame in the video stream
 firstFrame = None
 count,vid_no=0,0
+y=0
 while True:
 	if not os.path.exists(str(vid_no)+'.avi'):
-		video=cv2.VideoWriter(str(vid_no)+'.avi',fourcc,15.0,(w,h),True)
+		video=cv2.VideoWriter(str(vid_no)+'.avi',fourcc,30.0,(w,h),True)
 	# grab the current frame and initialize the occupied/unoccupied text
 	(grabbed, frame) = cam.read()
 	text = "Unoccupied"
@@ -54,18 +55,16 @@ while True:
 
 	# loop over the contours
 	detect_face = face(frame)
-	for c in cnts:
-		# if the contour is too small, ignore it
-		if cv2.contourArea(c) < 10000:  #cv2.contourArea(c) < args['min_area']
-			continue
-
-		text = "Occupied"
 
 	for x in fuck:
-		if cv2.contourArea(x) < 1000 and not detect_face:
+		y=cv2.contourArea(x)
+		if cv2.contourArea(x) < 3000 and not detect_face:
 			text = "Unoccupied"
+			continue
+		else:
+			text="Occupied"
 
-	if text=="Occupied":
+	if text=="Occupied1":
 		if detect_face:
 			print("good")
 			count=0
@@ -77,11 +76,12 @@ while True:
 				Process(target=email,args=(str(vid_no)+'.avi',)).start()
 				vid_no+=1
 				count=0
-	else:
-		prevFrame=gray
+	prevFrame=gray
 
-	cv2.putText(frame, "Room Status: {}".format(text), (10, 20),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+
+	cv2.putText(frame, "Room Status: {},{}".format(text,y), (10, 20),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 	cv2.imshow("Security Feed", frame)
+	cv2.imshow("Prev",prevFrame)
 	key = cv2.waitKey(1) & 0xFF
 	if key == ord("q"):
 		break
@@ -99,3 +99,11 @@ video.release()
 cv2.waitKey(0)
 cam.release()
 cv2.destroyAllWindows()
+'''
+for c in cnts:
+	# if the contour is too small, ignore it
+	if cv2.contourArea(c) < 3000:  #cv2.contourArea(c) < args['min_area']
+		continue
+
+	text = "Occupied1"
+'''

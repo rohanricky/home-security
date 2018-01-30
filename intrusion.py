@@ -8,11 +8,12 @@ from multiprocessing import Process
 from send_email import email
 from face import face
 import os
+import random
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-v", "--video", help="path to the video file")
-ap.add_argument("-a", "--min-area", type=int, default=500, help="minimum area size")
+ap.add_argument("-a", "--min-area", type=int, default=20000, help="minimum area size")
 args = vars(ap.parse_args())
 
 #Video of thief
@@ -36,25 +37,36 @@ while True:
 	# if the first frame is None, initialize it
 	if firstFrame is None:
 		firstFrame = gray
+		prevFrame = gray
 		continue
 	frameDelta = cv2.absdiff(firstFrame, gray)
+	consecDelta = cv2.absdiff(prevFrame,gray)
 	thresh = cv2.threshold(frameDelta, 25, 255, cv2.THRESH_BINARY)[1]
+	consecThresh = cv2.threshold(consecDelta, 25, 255, cv2.THRESH_BINARY)[1]
 
 	# dilate the thresholded image to fill in holes, then find contours
 	# on thresholded image
 #	pyautogui.confirm('Shall I confirm?')
 	thresh = cv2.dilate(thresh, None, iterations=2)
+	consecThresh = cv2.dilate(consecThresh, None, iterations=2)
 	_, cnts, _ = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+	_, fuck, _ = cv2.findContours(consecThresh.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 
 	# loop over the contours
+	detect_face = face(frame)
 	for c in cnts:
 		# if the contour is too small, ignore it
-		if cv2.contourArea(c) < args["min_area"]:
+		if cv2.contourArea(c) < 10000:  #cv2.contourArea(c) < args['min_area']
 			continue
 
 		text = "Occupied"
+
+	for x in fuck:
+		if cv2.contourArea(x) < 1000 and not detect_face:
+			text = "Unoccupied"
+
 	if text=="Occupied":
-		if face(frame) is 1:
+		if detect_face:
 			print("good")
 			count=0
 		else:
@@ -65,6 +77,8 @@ while True:
 				Process(target=email,args=(str(vid_no)+'.avi',)).start()
 				vid_no+=1
 				count=0
+	else:
+		prevFrame=gray
 
 	cv2.putText(frame, "Room Status: {}".format(text), (10, 20),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 	cv2.imshow("Security Feed", frame)

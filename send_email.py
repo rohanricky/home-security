@@ -20,6 +20,6 @@ def email(frame):
     msg.attach(part)
     server = smtplib.SMTP('smtp.gmail.com',port=587)
     server.starttls()
-    server.login('rohanricky0609@gmail.com','readalotofbooks')
+    server.login('rohanricky0609@gmail.com','ravanasura')
     server.send_message(msg)
     server.quit()

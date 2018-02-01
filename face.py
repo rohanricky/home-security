@@ -1,6 +1,5 @@
 import cv2
 import face_recognition
-from PIL import Image, ImageDraw
 
 rohan_image= face_recognition.load_image_file("rohan.jpg")
 rohan_face_encoding = face_recognition.face_encodings(rohan_image)[0]

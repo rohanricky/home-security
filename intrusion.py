@@ -8,12 +8,13 @@ from multiprocessing import Process
 from send_email import email
 from face import face
 import os
-import random
+
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-v", "--video", help="path to the video file")
 ap.add_argument("-a", "--min-area", type=int, default=20000, help="minimum area size")
+ap.add_argument("-t","--test",default=False)
 args = vars(ap.parse_args())
 
 #Video of thief
@@ -27,7 +28,7 @@ count,vid_no=0,0
 y=0
 while True:
 	if not os.path.exists(str(vid_no)+'.avi'):
-		video=cv2.VideoWriter(str(vid_no)+'.avi',fourcc,30.0,(w,h),True)
+		video=cv2.VideoWriter(str(vid_no)+'.avi',fourcc,20.0,(w,h),True)
 	# grab the current frame and initialize the occupied/unoccupied text
 	(grabbed, frame) = cam.read()
 	text = "Unoccupied"
@@ -40,20 +41,19 @@ while True:
 		firstFrame = gray
 		prevFrame = gray
 		continue
-	frameDelta = cv2.absdiff(firstFrame, gray)
+#	frameDelta = cv2.absdiff(firstFrame, gray)
 	consecDelta = cv2.absdiff(prevFrame,gray)
-	thresh = cv2.threshold(frameDelta, 25, 255, cv2.THRESH_BINARY)[1]
+#	thresh = cv2.threshold(frameDelta, 25, 255, cv2.THRESH_BINARY)[1]
 	consecThresh = cv2.threshold(consecDelta, 25, 255, cv2.THRESH_BINARY)[1]
 
 	# dilate the thresholded image to fill in holes, then find contours
 	# on thresholded image
 #	pyautogui.confirm('Shall I confirm?')
-	thresh = cv2.dilate(thresh, None, iterations=2)
+#	thresh = cv2.dilate(thresh, None, iterations=2)
 	consecThresh = cv2.dilate(consecThresh, None, iterations=2)
-	_, cnts, _ = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+#	_, cnts, _ = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 	_, fuck, _ = cv2.findContours(consecThresh.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 
-	# loop over the contours
 	detect_face = face(frame)
 
 	for x in fuck:
@@ -64,7 +64,7 @@ while True:
 		else:
 			text="Occupied"
 
-	if text=="Occupied1":
+	if text=="Occupied":
 		if detect_face:
 			print("good")
 			count=0
@@ -78,10 +78,10 @@ while True:
 				count=0
 	prevFrame=gray
 
-
-	cv2.putText(frame, "Room Status: {},{}".format(text,y), (10, 20),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-	cv2.imshow("Security Feed", frame)
-	cv2.imshow("Prev",prevFrame)
+	if args['test']:
+		cv2.putText(frame, "Room Status: {},{},{}".format(text,y,count), (10, 20),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+		cv2.imshow("Security Feed", frame)
+		cv2.imshow("Prev",prevFrame)
 	key = cv2.waitKey(1) & 0xFF
 	if key == ord("q"):
 		break

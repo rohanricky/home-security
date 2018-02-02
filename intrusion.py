@@ -8,7 +8,7 @@ from multiprocessing import Process
 from send_email import email
 from face import face
 import os
-
+import random
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
@@ -16,21 +16,30 @@ ap.add_argument("-v", "--video", help="path to the video file")
 ap.add_argument("-a", "--min-area", type=int, default=20000, help="minimum area size")
 ap.add_argument("-t","--test",default=False)
 args = vars(ap.parse_args())
-
+fgbg = cv2.createBackgroundSubtractorMOG2()
 #Video of thief
 fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-(h, w) = face_recognition.load_image_file('donga.jpg').shape[:2]
+#(h, w) = face_recognition.load_image_file('donga.jpg').shape[:2]
+(h,w) = (375,500)
 # Webcam
-cam = cv2.VideoCapture(0)
+if args.get("video",None) is None:
+	cam = cv2.VideoCapture(0)
+else:
+	cam = cv2.VideoCapture(args['video'])
 # initialize the first frame in the video stream
 firstFrame = None
-count,vid_no=0,0
-y=0
+count,vid_no,y=0,0,0
+
 while True:
 	if not os.path.exists(str(vid_no)+'.avi'):
-		video=cv2.VideoWriter(str(vid_no)+'.avi',fourcc,20.0,(w,h),True)
+		video=cv2.VideoWriter(str(vid_no)+'.avi',fourcc,30.0,(w,h),True)
+
 	# grab the current frame and initialize the occupied/unoccupied text
 	(grabbed, frame) = cam.read()
+
+	if not grabbed:
+		break
+	fgmask = fgbg.apply(frame)
 	text = "Unoccupied"
 	# resize the frame, convert it to grayscale, and blur it
 	frame = imutils.resize(frame, width=500)
@@ -77,33 +86,19 @@ while True:
 				vid_no+=1
 				count=0
 	prevFrame=gray
-
+	cv2.imshow('frame',fgmask)
 	if args['test']:
 		cv2.putText(frame, "Room Status: {},{},{}".format(text,y,count), (10, 20),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 		cv2.imshow("Security Feed", frame)
 		cv2.imshow("Prev",prevFrame)
 	key = cv2.waitKey(1) & 0xFF
-	if key == ord("q"):
+	if key == ord("w"):
 		break
-#	process(text,frame)
-#	cv2.putText(frame, datetime.datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),(10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
-
-	# For testing purposes show these videos
-#
-#	cv2.imshow("Thresh", thresh)
-#	cv2.imshow("Frame Delta", frameDelta)
-
 
 # cleanup the cam and close any open windows
-video.release()
-cv2.waitKey(0)
+try:
+	video.release()
+except:
+	pass
 cam.release()
 cv2.destroyAllWindows()
-'''
-for c in cnts:
-	# if the contour is too small, ignore it
-	if cv2.contourArea(c) < 3000:  #cv2.contourArea(c) < args['min_area']
-		continue
-
-	text = "Occupied1"
-'''

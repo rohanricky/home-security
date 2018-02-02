@@ -1,13 +1,19 @@
 import cv2
+from concat import concat
 
-cap = cv2.VideoCapture('0.avi')
-while(cap.isOpened()):
-    ret, frame = cap.read()
+concat()
+
+cam = cv2.VideoCapture('video.avi')
+'''
+while(1):
+    ret, frame = cam.read()
 
 #    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
+    if not ret:
+        break
     cv2.imshow('frame',frame)
-    cv2.waitKey(1000)
+    cv2.waitKey(700)
 
-cap.release()
+cam.release()
 cv2.destroyAllWindows()
+'''

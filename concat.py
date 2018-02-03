@@ -1,4 +1,3 @@
-import numpy as np
 import cv2
 import os
 
@@ -7,7 +6,6 @@ videofiles=sorted(videofiles, key=lambda item: int(item.partition('.')[0]))
 #videofiles = sorted(videofiles, key=lambda item: int( item.partition('.')[0]))
 print(videofiles)
 video_index = 0
-cap = cv2.VideoCapture(videofiles[0])
 fourcc = cv2.VideoWriter_fourcc(*'MJPG')
 
 out = cv2.VideoWriter("video.avi",fourcc,30, (500,375),True)

@@ -18,20 +18,28 @@ args = vars(ap.parse_args())
 
 #Video of thief
 fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-(h, w) = face_recognition.load_image_file('donga.jpg').shape[:2]
+#(h, w) = face_recognition.load_image_file('donga.jpg').shape[:2]
 # Webcam
-cam = cv2.VideoCapture(0)
+if args.get("video", None) is None:
+	cam = cv2.VideoCapture(0)
+	time.sleep(0.25)
+
+# otherwise, we are reading from a video file
+else:
+	cam = cv2.VideoCapture(args["video"])
 # initialize the first frame in the video stream
 firstFrame = None
 count,vid_no=0,0
 while True:
+	w = cam.get(3)
+	h = cam.get(4)
 	if not os.path.exists(str(vid_no)+'.avi'):
-		video=cv2.VideoWriter(str(vid_no)+'.avi',fourcc,15.0,(w,h),True)
+		video=cv2.VideoWriter(str(vid_no)+'.avi',fourcc,15.0,(int(w),int(h)),True)
 	# grab the current frame and initialize the occupied/unoccupied text
 	(grabbed, frame) = cam.read()
 	text = "Unoccupied"
 	# resize the frame, convert it to grayscale, and blur it
-	frame = imutils.resize(frame, width=500)
+#	frame = imutils.resize(frame, width=500)
 	gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 	gray = cv2.GaussianBlur(gray, (21, 21), 0)
 	# if the first frame is None, initialize it
@@ -51,10 +59,13 @@ while True:
 	# loop over the contours
 	detect_face=face(frame)
 
-	for x in fuck:
+	for dam in fuck:
 		# if the contour is too small, ignore it
-		if cv2.contourArea(x) < 3000 and not detect_face:
+		if cv2.contourArea(dam) < 3000 and not detect_face:
 			continue
+
+		(x, y, w, h) = cv2.boundingRect(dam)
+		cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
 		text = "Occupied"
 	if text=="Occupied":
@@ -73,7 +84,7 @@ while True:
 
 	cv2.putText(frame, "Room Status: {}".format(text), (10, 20),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 	cv2.imshow("Security Feed", frame)
-	cv2.imshow('gray',gray)
+#	cv2.imshow('gray',gray)
 	key = cv2.waitKey(1) & 0xFF
 	if key == ord("q"):
 		break

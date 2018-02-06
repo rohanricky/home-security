@@ -9,6 +9,6 @@ while(1):
         break
 
     cv2.imshow('hand',frame)
-    cv2.imwrite('shit/negatives/'+str(x)+'.jpg',frame)
+    cv2.imwrite('samples/negatives/'+str(x)+'.jpg',frame)
     x+=1
     time.sleep(0.1)

@@ -31,8 +31,7 @@ else:
 firstFrame = None
 count,vid_no=0,0
 while True:
-	w = cam.get(3)
-	h = cam.get(4)
+	w, h = cam.get(3), cam.get(4)
 	if not os.path.exists(str(vid_no)+'.avi'):
 		video=cv2.VideoWriter(str(vid_no)+'.avi',fourcc,15.0,(int(w),int(h)),True)
 	# grab the current frame and initialize the occupied/unoccupied text

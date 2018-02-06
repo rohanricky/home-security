@@ -1,7 +1,7 @@
 import cv2
 import os
 
-videofiles = [n for n in os.listdir('shit/') if n[-4:]=='.avi']
+videofiles = [n for n in os.listdir('videos/') if n[-4:]=='.avi']
 videofiles=sorted(videofiles, key=lambda item: int(item.partition('.')[0]))
 #videofiles = sorted(videofiles, key=lambda item: int( item.partition('.')[0]))
 print(videofiles)

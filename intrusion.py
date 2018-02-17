@@ -64,7 +64,7 @@ while True:
 			continue
 
 		(x, y, w, h) = cv2.boundingRect(dam)
-		cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+#		cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
 		text = "Occupied"
 	if text=="Occupied":
@@ -76,7 +76,7 @@ while True:
 			print('bad')
 			video.write(frame)
 			if count  >= 50:
-				Process(target=email,args=(str(vid_no)+'.avi',)).start()
+#				Process(target=email,args=(str(vid_no)+'.avi',)).start()
 				vid_no+=1
 				count=0
 	prevFrame = gray

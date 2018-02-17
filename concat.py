@@ -3,7 +3,7 @@ import os
 
 videofiles = [n for n in os.listdir('videos/') if n[-4:]=='.avi']
 videofiles=sorted(videofiles, key=lambda item: int(item.partition('.')[0]))
-#videofiles = sorted(videofiles, key=lambda item: int( item.partition('.')[0]))
+
 print(videofiles)
 video_index = 0
 fourcc = cv2.VideoWriter_fourcc(*'MJPG')
@@ -27,7 +27,6 @@ def concat():
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-cap.release()
 #out.release()
 cv2.destroyAllWindows()
 

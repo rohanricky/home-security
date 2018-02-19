@@ -29,11 +29,14 @@ else:
 	cam = cv2.VideoCapture(args["video"])
 # initialize the first frame in the video stream
 firstFrame = None
-count,vid_no=0,0
+count,vid_no,x=0,0,True
+time = datetime.datetime.now()
 while True:
 	w, h = cam.get(3), cam.get(4)
-	if not os.path.exists(str(vid_no)+'.avi'):
-		video=cv2.VideoWriter(str(vid_no)+'.avi',fourcc,15.0,(int(w),int(h)),True)
+	if x is True:
+		time = datetime.datetime.now()
+		video=cv2.VideoWriter(str(time)+'.avi',fourcc,15.0,(int(w),int(h)),True)
+		x=False
 	# grab the current frame and initialize the occupied/unoccupied text
 	(grabbed, frame) = cam.read()
 	text = "Unoccupied"
@@ -76,9 +79,10 @@ while True:
 			print('bad')
 			video.write(frame)
 			if count  >= 50:
-#				Process(target=email,args=(str(vid_no)+'.avi',)).start()
+				Process(target=email,args=(str(time)+'.avi',)).start()
 				vid_no+=1
 				count=0
+				x=True
 	prevFrame = gray
 
 	cv2.putText(frame, "Room Status: {}".format(text), (10, 20),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)

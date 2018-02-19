@@ -5,10 +5,9 @@ import imutils
 import time
 import cv2
 from multiprocessing import Process
-from lib.send_email import email
 from face import face
 import os
-from lib.google_drive import drive
+from lib.google_drive import drive,call
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
@@ -16,7 +15,7 @@ ap.add_argument("-v", "--video", help="path to the video file")
 ap.add_argument("-a", "--min-area", type=int, default=500, help="minimum area size")
 ap.add_argument("-t",default=False)
 args = vars(ap.parse_args())
-
+call()
 #Video of thief
 fourcc = cv2.VideoWriter_fourcc(*'MJPG')
 #(h, w) = face_recognition.load_image_file('donga.jpg').shape[:2]
@@ -36,7 +35,7 @@ while True:
 	w, h = cam.get(3), cam.get(4)
 	if x is True:
 		time = datetime.datetime.now()
-		video=cv2.VideoWriter(str(time)+'.avi',fourcc,15.0,(int(w),int(h)),True)
+		video=cv2.VideoWriter('videos/'+str(time)+'.avi',fourcc,15.0,(int(w),int(h)),True)
 		x=False
 	# grab the current frame and initialize the occupied/unoccupied text
 	(grabbed, frame) = cam.read()
@@ -80,7 +79,7 @@ while True:
 			print('bad')
 			video.write(frame)
 			if count  >= 50:
-				Process(target=drive,args=(str(time)+'.avi',)).start()
+				Process(target=drive,args=('videos/'+str(time)+'.avi',)).start()
 				vid_no+=1
 				count=0
 				x=True

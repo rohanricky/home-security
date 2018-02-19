@@ -2,7 +2,7 @@
 from __future__ import print_function
 import httplib2
 import os
-
+from brain.brain import get_shit
 from apiclient import discovery
 from oauth2client import client
 from oauth2client import tools
@@ -24,3 +24,5 @@ def drive(file):
     media = MediaFileUpload(file,mimetype='video/avi')
     file = service.files().create(body=file_metadata,media_body=media,fields='id').execute()
     print('File ID: %s' % file.get('id'))
+
+get_shit()

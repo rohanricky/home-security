@@ -8,12 +8,11 @@ from intrusion import secret_cam
 config = configparser.ConfigParser()
 config.read('config.ini')
 access_token=config['HOST']
-print(access_token['safety_token'])
 
 app = Flask(__name__)
 
 
-@app.route('/home')
+@app.route('/home'+access_token['safety_token'])
 def home():
     secret_cam()
 

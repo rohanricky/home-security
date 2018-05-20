@@ -12,9 +12,13 @@ access_token=config['HOST']
 app = Flask(__name__)
 
 
-@app.route('/home'+access_token['safety_token'])
+@app.route('/home')
 def home():
-    secret_cam()
+    try:
+        secret_cam()
+    except ValueError:
+        return "Fuck"
+# send post request to my computer
 
 if __name__=='__main__':
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=True)
+    app.run(host='127.0.0.1', port=int(os.environ.get('PORT', 5000)), debug=True)

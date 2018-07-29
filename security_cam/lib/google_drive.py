@@ -2,13 +2,12 @@
 from __future__ import print_function
 import httplib2
 import os
-from brain.brain import get_shit
 from apiclient import discovery
 from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage
 from apiclient.http import MediaFileUpload
-from .google_credentials import get_credentials
+from lib.google_credentials import get_credentials
 
 def drive(file):
     """Shows basic usage of the Google Drive API.

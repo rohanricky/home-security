@@ -3,7 +3,7 @@ import os
 import requests
 from flask import Flask, request ,Response
 import configparser
-from intrusion import secret_cam
+from security_cam.intrusion import secret_cam
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -18,6 +18,14 @@ def home():
         secret_cam()
     except ValueError:
         return "Fuck"
+
+# @app.route('/cool',methods=['GET','POST'])
+# def cool():
+#     if request.method == 'POST':
+#         return 'Damn it'
+#     else:
+#         return 'It damn'
+
 # send post request to my computer
 
 if __name__=='__main__':

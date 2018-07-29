@@ -1,14 +1,18 @@
-import face_recognition
+import os
 import argparse
 import datetime
 import imutils
 import time
 import cv2
 from multiprocessing import Process
-from face import face
-import os
-from lib.google_drive import drive
 import psutil
+import sys
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(dir_path)
+
+from face import face
+from lib.google_drive import drive
 
 # construct the argument parser and parse the arguments
 def secret_cam():
@@ -103,8 +107,7 @@ def secret_cam():
 		pass
 	cam.release()
 	cv2.destroyAllWindows()
+	return frame
 
 if __name__=='__main__':
 	secret_cam()
-	print(psutil.cpu_percent())
-	print(psutil.virtual_memory())

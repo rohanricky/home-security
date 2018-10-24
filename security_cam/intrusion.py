@@ -70,7 +70,7 @@ def secret_cam():
 
 		for dam in fuck:
 			# if the contour is too small, ignore it
-			if cv2.contourArea(dam) < 3000 and not detect_face:
+			if cv2.contourArea(dam) < 11000 and not detect_face:
 				continue
 
 			(x, y, w, h) = cv2.boundingRect(dam)
@@ -85,7 +85,7 @@ def secret_cam():
 				count+=1
 				print('bad')
 				video.write(frame)
-				if count  >= 50:
+				if count >= 50:
 					Process(target=drive,args=('videos/'+str(time_now)+'.avi',)).start()
 					vid_no+=1
 					count=0

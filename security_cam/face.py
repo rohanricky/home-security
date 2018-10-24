@@ -1,7 +1,5 @@
 import cv2
 import face_recognition
-# from PIL import Image, ImageDraw
-import os 
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -13,11 +11,11 @@ def face(unknown_image):
     try:
         unknown_face_encoding = face_recognition.face_encodings(unknown_image)[0]
     except:
-        return 2
+        return False
     face_locations = face_recognition.face_locations(unknown_image)
     # known_faces = [rohan_face_encoding]
     if len(face_locations) > 0:
-        return 1
+        return True
 
     # for face_location in face_locations:
     #     top, right, bottom, left = face_location

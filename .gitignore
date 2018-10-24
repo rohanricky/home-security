@@ -1,0 +1,8 @@
+*.pyc
+actual.py
+quora_followers.py
+geckodriver.log
+*.avi
+__pycache__/
+*.json
+*.ini

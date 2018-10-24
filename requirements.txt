@@ -1,0 +1,9 @@
+numpy==1.11.0
+requests==2.18.1
+psutil==5.4.5
+Flask==0.12.2
+imutils==0.4.5
+httplib2==0.10.3
+google_api_python_client==1.7.4
+beautifulsoup4==4.6.1
+face_recognition==1.2.2

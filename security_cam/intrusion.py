@@ -7,6 +7,8 @@ import cv2
 from multiprocessing import Process
 import psutil
 import sys
+#make face recognition asyncronous
+import asyncio
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(dir_path)
@@ -17,6 +19,7 @@ from lib.google_drive import drive
 # construct the argument parser and parse the arguments
 def secret_cam():
 	global time
+	# start program from command line
 	ap = argparse.ArgumentParser()
 	ap.add_argument("-v", "--video", help="path to the video file")
 	ap.add_argument("-a", "--min-area", type=int, default=500, help="minimum area size")
